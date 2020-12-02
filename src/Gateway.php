@@ -28,7 +28,6 @@ class Gateway extends AbstractGateway
         return [
             'storeId' => '',
             'sharedSecret' => '',
-            'testMode' => false,
         ];
     }
 
@@ -77,10 +76,9 @@ class Gateway extends AbstractGateway
     /**
      * Receive and handle an instant payment notification (IPN)
      *
-     * @param array $parameters
      */
-    public function acceptNotification(array $parameters = [])
+    public function acceptNotification()
     {
-        return $this->createRequest(Message\NotificationRequest::class, $parameters);
+        return new Message\Notification($this->httpRequest, $this->getParameter('storeId'), $this->getParameter('sharedSecret'));
     }
 }

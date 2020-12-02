@@ -8,7 +8,7 @@ use Omnipay\Common\Exception\InvalidResponseException;
 /**
  * FirstDataConnectIPN CompletePurchase Request
  */
-class CompletePurchaseRequest extends AbstractRequest implements NotificationInterface
+class NotificationRequest extends AbstractRequest implements NotificationInterface
 {
 
     /**

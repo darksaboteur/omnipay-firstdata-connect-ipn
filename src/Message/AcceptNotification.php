@@ -6,9 +6,9 @@ use Omnipay\Common\Message\NotificationInterface;
 use Omnipay\Common\Exception\InvalidResponseException;
 
 /**
- * FirstDataConnectIPN CompletePurchase Request
+ * FirstDataConnectIPN Accept Notification
  */
-class Notification implements NotificationInterface
+class AcceptNotification implements NotificationInterface
 {
     private $httpRequest;
     private $storeId;
@@ -30,7 +30,7 @@ class Notification implements NotificationInterface
      *
      * @return mixed
      */
-    public function getData()
+    public function getData() : array
     {
         if ($this->getHash() != $this->getBankHash()) {
             throw new InvalidResponseException('The payment gateway response could not be verified');
@@ -40,42 +40,17 @@ class Notification implements NotificationInterface
     }
 
     /**
-     * Response Message
-     *
-     * @return null|string
-     */
-    public function getMessage()
-    {
-        return $this->data['fail_reason'] ?? $this->getStatus();
-    }
-
-    public function getStatus()
-    {
-        return isset($this->data['status']) ? $this->data['status'] : null;
-    }
-
-    /**
      * Get the transaction ID
      *
      * @return string
      */
     public function getTransactionReference()
     {
-        return isset($this->data['oid']) ? $this->data['oid'] : null;
+        return $this->data['oid'] ?? null;
     }
 
     /**
-     * Get the stored credit card details token
-     *
-     * @return string|null
-     */
-    public function getStoredDetailsToken() : ?string
-    {
-        return isset($this->data['hosteddataid']) ? $this->data['hosteddataid'] : null;
-    }
-
-    /**
-     * Translate the ONEPAY status values to OmniPay status values.
+     * Translate the First Data status values to OmniPay status values.
      */
     public function getTransactionStatus()
     {
@@ -90,24 +65,34 @@ class Notification implements NotificationInterface
     }
 
     /**
+     * Response Message
+     *
+     * @return null|string
+     */
+    public function getMessage()
+    {
+        return $this->data['fail_reason'] ?? $this->getStatus();
+    }
+
+    /**
+     * Get the stored credit card details token
+     *
+     * @return string|null
+     */
+    public function getStoredDetailsToken() : ?string
+    {
+        return $this->data['hosteddataid'] ?? null;
+    }
+
+    /**
      * Get hash for response
      *
      * @param string timestamp
      * @return string
      */
-    public function getHash()
+    public function getHash() : string
     {
         return self::createHash($this->sharedSecret . $this->httpRequest->request->get('approval_code') . $this->httpRequest->request->get('chargetotal') . $this->httpRequest->request->get('currency') . $this->httpRequest->request->get('txndatetime') . $this->storeId);
-    }
-
-    /**
-     * Get hash from bank response
-     *
-     * @return string
-     */
-    protected function getBankHash()
-    {
-        return $this->httpRequest->request->get('response_hash');
     }
 
     /**
@@ -116,8 +101,23 @@ class Notification implements NotificationInterface
      * @param string
      * @return string
      */
-    public static function createHash($string, $algo = 'SHA256')
+    public static function createHash($string, $algo = 'SHA256') : string
     {
         return hash($algo, bin2hex($string));
+    }
+
+    /**
+     * Get hash from bank response
+     *
+     * @return string
+     */
+    protected function getBankHash() : string
+    {
+        return $this->httpRequest->request->get('response_hash');
+    }
+
+    protected function getStatus() : ?string
+    {
+        return $this->data['status'] ?? null;
     }
 }

@@ -79,6 +79,6 @@ class Gateway extends AbstractGateway
      */
     public function acceptNotification()
     {
-        return new Message\Notification($this->httpRequest, $this->getParameter('storeId'), $this->getParameter('sharedSecret'));
+        return new Message\AcceptNotification($this->httpRequest, $this->getParameter('storeId'), $this->getParameter('sharedSecret'));
     }
 }

@@ -92,7 +92,7 @@ class AcceptNotification implements NotificationInterface
      */
     public function getHash() : string
     {
-        return self::createHash($this->sharedSecret . $this->httpRequest->request->get('approval_code') . $this->httpRequest->request->get('chargetotal') . $this->httpRequest->request->get('currency') . $this->httpRequest->request->get('txndatetime') . $this->storeId);
+        return self::createHash($this->sharedSecret . $this->httpRequest->request->get('approval_code') . $this->httpRequest->request->get('chargetotal') . $this->httpRequest->request->get('currency') . $this->httpRequest->request->get('txndatetime') . $this->storeId, $this->httpRequest->request->get('hash_algorithm'));
     }
 
     /**

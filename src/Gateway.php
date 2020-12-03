@@ -1,6 +1,7 @@
 <?php
 namespace Omnipay\FirstDataConnectIPN;
 
+use Carbon\Carbon;
 use Omnipay\Common\AbstractGateway;
 use Omnipay\FirstDataConnectIPN\Message\AcceptNotification;
 
@@ -29,7 +30,61 @@ class Gateway extends AbstractGateway
         return [
             'storeId' => '',
             'sharedSecret' => '',
+            'currency' => '',
+            'hashAlgorithm' => 'SHA256',
         ];
+    }
+
+    /**
+     * Getter
+     *
+     * @return string
+     */
+    public function getTime()
+    {
+        return Carbon::now()->format('Y:m:d-H:i:s');
+    }
+
+    /**
+     * Setter
+     *
+     * @param string
+     * @return $this
+     */
+    public function setCurrency($value)
+    {
+        return $this->setParameter('currency', $value);
+    }
+
+    /**
+     * Getter
+     *
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->getParameter('currency');
+    }
+
+    /**
+     * Setter
+     *
+     * @param string
+     * @return $this
+     */
+    public function setHashAlgorithm($value)
+    {
+        return $this->setParameter('hashAlgorithm', $value);
+    }
+
+    /**
+     * Getter
+     *
+     * @return string
+     */
+    public function getHashAlgorithm()
+    {
+        return $this->getParameter('hashAlgorithm');
     }
 
     /**
@@ -81,9 +136,9 @@ class Gateway extends AbstractGateway
      * @param string $algo to use, SHA256 or SHA512
      * @return string hashed string
      */
-    public function createHash(string $string, $algo = 'SHA256') : string
+    public function createHash(string $txnDateTime, $chargeTotal) : string
     {
-        return AcceptNotification::createHash($string, $algo);
+        return AcceptNotification::createHash($this->getStoreId().$txnDateTime.$chargeTotal.$this->getCurrency().$this->getSharedSecret(), $this->getHashAlgorithm());
     }
 
     /**
@@ -93,6 +148,6 @@ class Gateway extends AbstractGateway
      */
     public function acceptNotification()
     {
-        return new AcceptNotification($this->httpRequest, $this->getParameter('storeId'), $this->getParameter('sharedSecret'));
+        return new AcceptNotification($this->httpRequest, $this->getStoreId(), $this->getSharedSecret());
     }
 }

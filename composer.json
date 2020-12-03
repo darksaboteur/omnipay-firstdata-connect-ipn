@@ -14,7 +14,7 @@
     ],
     "require": {
         "omnipay/common": "~2.0",
-        "carbon/carbon": "~1.39"
+        "nesbot/carbon": ">=1.0 <3.0"
     },
     "require-dev": {
         "omnipay/tests": "~2.0"

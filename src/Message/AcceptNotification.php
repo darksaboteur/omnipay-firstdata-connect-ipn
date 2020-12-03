@@ -98,8 +98,9 @@ class AcceptNotification implements NotificationInterface
     /**
      * Create hash
      *
-     * @param string
-     * @return string
+     * @param string $string to be be hashed
+     * @param string $algo to use, SHA256 or SHA512
+     * @return string hashed string
      */
     public static function createHash($string, $algo = 'SHA256') : string
     {

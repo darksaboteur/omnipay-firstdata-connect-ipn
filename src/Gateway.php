@@ -1,6 +1,7 @@
 <?php
 namespace Omnipay\FirstDataConnectIPN;
 
+use Message\AcceptNotification;
 use Omnipay\Common\AbstractGateway;
 
 /**
@@ -74,11 +75,24 @@ class Gateway extends AbstractGateway
     }
 
     /**
+     * Create hash
+     *
+     * @param string $string to be be hashed
+     * @param string $algo to use, SHA256 or SHA512
+     * @return string hashed string
+     */
+    public function createHash(string $string, $algo = 'SHA256') : string
+    {
+        return AcceptNotification::createHash($string, $algo);
+    }
+
+    /**
      * Receive and handle an instant payment notification (IPN)
      *
+     * @return AcceptNotification
      */
     public function acceptNotification()
     {
-        return new Message\AcceptNotification($this->httpRequest, $this->getParameter('storeId'), $this->getParameter('sharedSecret'));
+        return new AcceptNotification($this->httpRequest, $this->getParameter('storeId'), $this->getParameter('sharedSecret'));
     }
 }

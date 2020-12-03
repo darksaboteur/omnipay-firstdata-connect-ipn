@@ -1,8 +1,8 @@
 <?php
 namespace Omnipay\FirstDataConnectIPN;
 
-use Message\AcceptNotification;
 use Omnipay\Common\AbstractGateway;
+use Omnipay\FirstDataConnectIPN\Message\AcceptNotification;
 
 /**
  * FirstDataConnectIPN Gateway

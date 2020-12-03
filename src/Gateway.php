@@ -32,7 +32,28 @@ class Gateway extends AbstractGateway
             'sharedSecret' => '',
             'currency' => '',
             'hashAlgorithm' => 'SHA256',
+            'timezone' => '',
         ];
+    }
+
+    /**
+     * Setter
+     *
+     * @return string
+     */
+    public function setTimezone($value)
+    {
+        return $this->setParameter('timezone', $value);
+    }
+
+    /**
+     * Getter
+     *
+     * @return string
+     */
+    public function getTimezone()
+    {
+        return $this->getParameter('timezone');
     }
 
     /**
@@ -42,7 +63,7 @@ class Gateway extends AbstractGateway
      */
     public function getTime()
     {
-        return Carbon::now()->format('Y:m:d-H:i:s');
+        return Carbon::now($this->getTimezone())->format('Y:m:d-H:i:s');
     }
 
     /**

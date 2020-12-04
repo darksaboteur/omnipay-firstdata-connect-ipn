@@ -34,8 +34,14 @@ class AcceptNotification implements NotificationInterface
      */
     public function getData() : array
     {   
-        if (($this->isNotification && $this->createNotificationHash() != $this->getNotificationHash()) || (!$this->isNotification && $this->createResponseHash() != $this->getResponseHash())) {
-            throw new InvalidResponseException('The payment gateway response could not be verified');
+        if ($this->isNotification) {
+            if ($this->createNotificationHash() != $this->getNotificationHash()) {
+                throw new InvalidResponseException('The payment gateway notification could not be verified');
+            }
+        } else {
+            if ($this->createResponseHash() != $this->getResponseHash()) {
+                throw new InvalidResponseException('The payment gateway response could not be verified');
+            }
         }
 
         return $this->httpRequest->request->all();

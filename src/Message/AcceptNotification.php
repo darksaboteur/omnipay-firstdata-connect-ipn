@@ -88,6 +88,48 @@ class AcceptNotification implements NotificationInterface
     }
 
     /**
+     * Get the last 4 digits from the card
+     *
+     * @return null|string
+     */
+    public function getLastFour() : ?string
+    {
+        if (isset($this->data['cardnumber']) && strlen($this->data['cardnumber']) >= 4) {
+            $lastFour = substr($this->data['cardnumber'], -4);
+            if (ctype_digit($lastFour)) {
+                return $lastFour;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the expiry month from the card
+     *
+     * @return null|string
+     */
+    public function getExpiryMonth() : ?string
+    {
+        if (isset($this->data['expmonth']) && $this->data['expmonth']) {
+            return str_pad($this->data['expmonth'], 2, "0", STR_PAD_LEFT);
+        }
+        return null;
+    }
+
+    /**
+     * Get the expiry year from the card
+     *
+     * @return null|string
+     */
+    public function getExpiryYear() : ?string
+    {
+        if (isset($this->data['expyear']) && $this->data['expyear']) {
+            return str_pad($this->data['expyear'], 2, "0", STR_PAD_LEFT);
+        }
+        return null;
+    }
+
+    /**
      * Get the stored credit card details token
      *
      * @return string|null

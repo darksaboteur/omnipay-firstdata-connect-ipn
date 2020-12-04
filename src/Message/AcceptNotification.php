@@ -13,6 +13,7 @@ class AcceptNotification implements NotificationInterface
     private $httpRequest;
     private $storeId;
     private $sharedSecret;
+    private $isNotification;
 
     protected $data;
 
@@ -21,8 +22,9 @@ class AcceptNotification implements NotificationInterface
         $this->httpRequest = $request;
         $this->storeId = $storeId;
         $this->sharedSecret = $sharedSecret;
+        $this->isNotification = $isNotification;
 
-        $this->data = $this->getData($isNotification);
+        $this->data = $this->getData();
     }
 
     /**
@@ -30,9 +32,9 @@ class AcceptNotification implements NotificationInterface
      *
      * @return mixed
      */
-    public function getData(bool $isNotification) : array
+    public function getData() : array
     {   
-        if (($isNotification && $this->createNotificationHash() != $this->getNotificationHash()) || (!$isNotification && $this->createResponseHash() != $this->getResponseHash())) {
+        if (($this->isNotification && $this->createNotificationHash() != $this->getNotificationHash()) || (!$this->isNotification && $this->createResponseHash() != $this->getResponseHash())) {
             throw new InvalidResponseException('The payment gateway response could not be verified');
         }
 

@@ -16,13 +16,13 @@ class AcceptNotification implements NotificationInterface
 
     protected $data;
 
-    public function __construct(Request $request, $storeId, $sharedSecret)
+    public function __construct(Request $request, $storeId, $sharedSecret, bool $isNotification = true)
     {
         $this->httpRequest = $request;
         $this->storeId = $storeId;
         $this->sharedSecret = $sharedSecret;
 
-        $this->data = $this->getData();
+        $this->data = $this->getData($isNotification);
     }
 
     /**
@@ -30,13 +30,18 @@ class AcceptNotification implements NotificationInterface
      *
      * @return mixed
      */
-    public function getData() : array
-    {
-        if ($this->getHash() != $this->getBankHash()) {
+    public function getData(bool $isNotification) : array
+    {   
+        if (($isNotification && $this->createNotificationHash() != $this->getNotificationHash()) || (!$isNotification && $this->createResponseHash() != $this->getResponseHash())) {
             throw new InvalidResponseException('The payment gateway response could not be verified');
         }
 
         return $this->httpRequest->request->all();
+    }
+
+    protected function getStatus() : ?string
+    {
+        return $this->data['status'] ?? null;
     }
 
     /**
@@ -85,14 +90,45 @@ class AcceptNotification implements NotificationInterface
     }
 
     /**
+     * Get hash from bank response
+     *
+     * @return string
+     */
+    protected function getResponseHash() : string
+    {
+        return $this->httpRequest->request->get('response_hash');
+    }
+
+    /**
+     * Get hash from bank notification
+     *
+     * @return string
+     */
+    protected function getNotificationHash() : string
+    {
+        return $this->httpRequest->request->get('notification_hash');
+    }
+
+    /**
      * Get hash for response
      *
      * @param string timestamp
      * @return string
      */
-    public function getHash() : string
+    public function createResponseHash() : string
     {
         return self::createHash($this->sharedSecret . $this->httpRequest->request->get('approval_code') . $this->httpRequest->request->get('chargetotal') . $this->httpRequest->request->get('currency') . $this->httpRequest->request->get('txndatetime') . $this->storeId, $this->httpRequest->request->get('hash_algorithm'));
+    }
+
+    /**
+     * Get hash for notification
+     *
+     * @param string timestamp
+     * @return string
+     */
+    public function createNotificationHash() : string
+    {
+        return self::createHash($this->httpRequest->request->get('chargetotal') . $this->sharedSecret . $this->httpRequest->request->get('currency') . $this->httpRequest->request->get('txndatetime') . $this->storeId . $this->httpRequest->request->get('approval_code'), $this->httpRequest->request->get('hash_algorithm'));
     }
 
     /**
@@ -105,20 +141,5 @@ class AcceptNotification implements NotificationInterface
     public static function createHash($string, $algo = 'SHA256') : string
     {
         return hash($algo, bin2hex($string));
-    }
-
-    /**
-     * Get hash from bank response
-     *
-     * @return string
-     */
-    protected function getBankHash() : string
-    {
-        return $this->httpRequest->request->get('response_hash');
-    }
-
-    protected function getStatus() : ?string
-    {
-        return $this->data['status'] ?? null;
     }
 }

@@ -151,13 +151,13 @@ class Gateway extends AbstractGateway
     }
 
     /**
-     * Create hash
+     * Create Request hash used for direct post to First Data
      *
      * @param string $string to be be hashed
      * @param string $algo to use, SHA256 or SHA512
      * @return string hashed string
      */
-    public function createHash(string $txnDateTime, $chargeTotal) : string
+    public function createRequestHash(string $txnDateTime, $chargeTotal) : string
     {
         return AcceptNotification::createHash($this->getStoreId().$txnDateTime.$chargeTotal.$this->getCurrency().$this->getSharedSecret(), $this->getHashAlgorithm());
     }
@@ -167,8 +167,8 @@ class Gateway extends AbstractGateway
      *
      * @return AcceptNotification
      */
-    public function acceptNotification()
+    public function acceptNotification(bool $isNotification = true)
     {
-        return new AcceptNotification($this->httpRequest, $this->getStoreId(), $this->getSharedSecret());
+        return new AcceptNotification($this->httpRequest, $this->getStoreId(), $this->getSharedSecret(), $isNotification);
     }
 }

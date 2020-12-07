@@ -140,6 +140,16 @@ class AcceptNotification implements NotificationInterface
     }
 
     /**
+     * Get the amount the transaction was for
+     *
+     * @return string|null
+     */
+    public function getAmount() : ?string
+    {
+        return $this->data['chargetotal'] ?? null;
+    }
+
+    /**
      * Get hash from bank response
      *
      * @return string

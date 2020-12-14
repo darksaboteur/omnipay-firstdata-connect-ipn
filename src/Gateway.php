@@ -10,6 +10,9 @@ use Omnipay\FirstDataConnectIPN\Message\AcceptNotification;
  */
 class Gateway extends AbstractGateway
 {
+    protected $liveEndpoint = 'https://www.ipg-online.com/connect/gateway/processing';
+    protected $testEndpoint = 'https://test.ipg-online.com/connect/gateway/processing';
+
     /**
      * Gateway name
      *
@@ -34,6 +37,11 @@ class Gateway extends AbstractGateway
             'hashAlgorithm' => 'SHA256',
             'timezone' => '',
         ];
+    }
+
+    public function getEndpoint()
+    {
+        return $this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint;
     }
 
     /**

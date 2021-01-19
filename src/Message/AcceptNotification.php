@@ -17,6 +17,14 @@ class AcceptNotification implements NotificationInterface
 
     protected $data;
 
+    const AUTH_3D_SECURE_SUCCESSFUL = 1;
+    const AUTH_3D_SECURE_SUCCESSFUL_NO_AVV = 2;
+    const AUTH_3D_SECURE_FAILED = 3;
+    const AUTH_3D_SECURE_ATTEMPT = 4;
+    const AUTH_3D_SECURE_UNABLE_DS = 5;
+    const AUTH_3D_SECURE_UNABLE_ACS = 6;
+    const AUTH_3D_SECURE_CARDHOLDER_NOT_ENROLLED = 7;
+
     public function __construct(Request $request, $storeId, $sharedSecret, bool $isNotification = true)
     {
         $this->httpRequest = $request;
@@ -127,6 +135,16 @@ class AcceptNotification implements NotificationInterface
             return str_pad($this->data['expyear'], 2, "0", STR_PAD_LEFT);
         }
         return null;
+    }
+
+    /**
+     * Get the 3d secure response code
+     *
+     * @return int|null
+     */
+    public function get3DSecureStatus() : ?int
+    {
+        return $this->data['response_code_3dsecure'] ?? null;
     }
 
     /**

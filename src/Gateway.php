@@ -10,9 +10,6 @@ use Omnipay\FirstDataConnectIPN\Message\AcceptNotification;
  */
 class Gateway extends AbstractGateway
 {
-    protected $liveEndpoint = 'https://www.ipg-online.com/connect/gateway/processing';
-    protected $testEndpoint = 'https://test.ipg-online.com/connect/gateway/processing';
-
     /**
      * Gateway name
      *
@@ -36,12 +33,14 @@ class Gateway extends AbstractGateway
             'currency' => '',
             'hashAlgorithm' => 'SHA256',
             'timezone' => '',
+            'liveEndpoint' => 'https://www.ipg-online.com/connect/gateway/processing',
+            'testEndpoint' => 'https://test.ipg-online.com/connect/gateway/processing',
         ];
     }
 
     public function getEndpoint()
     {
-        return $this->getTestMode() ? $this->testEndpoint : $this->liveEndpoint;
+        return $this->getTestMode() ? $this->getParameter('testEndpoint') : $this->getParameter('liveEndpoint');
     }
 
     /**
@@ -179,4 +178,27 @@ class Gateway extends AbstractGateway
     {
         return new AcceptNotification($this->httpRequest, $this->getStoreId(), $this->getSharedSecret(), $isNotification);
     }
+
+    /**
+     * Setter
+     *
+     * @param string
+     * @return $this
+     */
+    public function setLiveEndpoint($value)
+    {
+        return $this->setParameter('liveEndpoint', $value);
+    }
+    
+    /**
+     * Setter
+     *
+     * @param string
+     * @return $this
+     */
+    public function setTestEndpoint($value)
+    {
+        return $this->setParameter('testEndpoint', $value);
+    }
+
 }
